@@ -2,217 +2,965 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Project 43 | Dual-Game AI Search Analysis Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Project 43 | Dual-Game AI Search Lab (Mobile & Web)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --primary: #6366f1;
       --primary-dark: #4f46e5;
       --secondary: #ec4899;
-      --bg: #0f172a;
-      --card-bg: #1e293b;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #0b0f19;
+      --surface: #111827;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --border: rgba(255, 255, 255, 0.1);
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: #334155;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      background: linear-gradient(135deg, #0b0f19 0%, #1e1b4b 50%, #0f172a 100%);
+      background-attachment: fixed;
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      padding-bottom: 70px;
+    }
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
     }
-    .container {
-      max-width: 960px;
-      width: 100%;
-      background: rgba(30, 41, 59, 0.7);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 3rem 2rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-    .badge {
-      display: inline-block;
-      padding: 0.35rem 0.85rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      background: rgba(99, 102, 241, 0.2);
-      color: #a5b4fc;
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      margin-bottom: 1rem;
-    }
-    h1 {
-      font-size: 2.5rem;
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
       font-weight: 800;
-      line-height: 1.2;
+      font-size: 1.15rem;
       background: linear-gradient(to right, #ffffff, #a5b4fc, #f472b6);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 0.75rem;
     }
-    p.subtitle {
-      font-size: 1.15rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 2.5rem;
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2.5rem;
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
+      width: 100%;
+      flex: 1;
     }
-    .card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 1.5rem;
-      transition: all 0.25s ease;
+    .tabs {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: var(--primary);
-      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
-    }
-    .card h3 {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
       gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      scrollbar-width: none;
     }
-    .card p {
-      font-size: 0.92rem;
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex: 1;
+      white-space: nowrap;
+      padding: 0.65rem 1rem;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       color: var(--text-muted);
-      line-height: 1.5;
-      margin-bottom: 1.25rem;
-    }
-    .btn {
-      display: inline-flex;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.75rem 1.25rem;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      cursor: pointer;
+      gap: 0.4rem;
     }
-    .btn-primary {
+    .tab-btn.active {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: #ffffff;
-      border: none;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
     }
-    .btn-primary:hover {
-      opacity: 0.92;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-    }
-    .btn-secondary {
-      background: transparent;
-      color: #cbd5e1;
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
       border: 1px solid var(--border);
-    }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: #64748b;
-      color: #ffffff;
-    }
-    .banner {
-      background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.15));
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      border-radius: 12px;
+      border-radius: 16px;
       padding: 1.25rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .banner-text h4 {
-      font-size: 1.05rem;
-      margin-bottom: 0.25rem;
       color: #ffffff;
     }
-    .banner-text p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
+
+    /* Grid and boards */
+    .board-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 1rem 0;
     }
-    footer {
+    .puzzle-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 280px;
+      height: 280px;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 10px;
+      border-radius: 14px;
+      border: 2px solid rgba(99, 102, 241, 0.3);
+    }
+    .puzzle-tile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #ffffff;
+      font-size: 1.8rem;
+      font-weight: 800;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .puzzle-tile:active { transform: scale(0.95); }
+    .puzzle-tile.empty {
+      background: rgba(15, 23, 42, 0.4);
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      cursor: default;
+      box-shadow: none;
+    }
+    .puzzle-tile.correct {
+      background: linear-gradient(135deg, #059669, #10b981);
+    }
+
+    /* Tic Tac Toe Board */
+    .ttt-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 280px;
+      height: 280px;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 10px;
+      border-radius: 14px;
+      border: 2px solid rgba(236, 72, 153, 0.3);
+    }
+    .ttt-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(30, 41, 59, 0.8);
+      color: #ffffff;
+      font-size: 2.2rem;
+      font-weight: 900;
+      border-radius: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border);
+    }
+    .ttt-cell:active { transform: scale(0.94); }
+    .ttt-cell.x { color: #38bdf8; text-shadow: 0 0 12px rgba(56, 189, 248, 0.5); }
+    .ttt-cell.o { color: #f472b6; text-shadow: 0 0 12px rgba(244, 114, 182, 0.5); }
+    .ttt-cell.win { background: rgba(16, 185, 129, 0.3); border-color: #10b981; }
+
+    /* Telemetry grid */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+    .metric-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.75rem;
       text-align: center;
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-top: 2rem;
     }
+    .metric-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-top: 0.2rem;
+    }
+    .metric-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .btn {
+      flex: 1;
+      min-width: 110px;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      color: #fff;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+    .btn-secondary { background: rgba(51, 65, 85, 0.8); border: 1px solid var(--border); }
+    .btn-accent { background: linear-gradient(135deg, #10b981, #059669); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .alert-success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .alert-info { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); }
+    .alert-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+
+    .slider-container {
+      margin: 0.8rem 0;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    input[type=range] {
+      width: 100%;
+      accent-color: #6366f1;
+    }
+
+    /* Bottom mobile nav */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem 0.25rem;
+      z-index: 200;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .nav-item.active {
+      color: #a5b4fc;
+    }
+    .nav-item svg { width: 22px; height: 22px; stroke-width: 2; }
+
+    /* Links list */
+    .resource-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.9rem 1.1rem;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .resource-link:hover { border-color: var(--primary); transform: translateX(3px); }
   </style>
 </head>
 <body>
+
+  <header>
+    <div class="logo">
+      <span>🧠</span> AI SEARCH LAB
+    </div>
+    <div class="status-badge">● Live on Vercel</div>
+  </header>
+
   <div class="container">
-    <span class="badge">Project 43 &bull; AI Search Lab</span>
-    <h1>Dual-Game AI Search Analysis Dashboard</h1>
-    <p class="subtitle">
-      Empirical research, heuristic benchmarking, and step-by-step visualizer for <strong>8-Puzzle</strong> (DLS, IDDFS, A* Manhattan) and <strong>Tic-Tac-Toe</strong> (Depth-Limited Minimax).
-    </p>
 
-    <div class="banner">
-      <div class="banner-text">
-        <h4>🚀 Running the Interactive Streamlit App</h4>
-        <p>To run the full interactive Python dashboard locally with real-time algorithm visualization:</p>
+    <!-- PAGE 1: 8-PUZZLE -->
+    <div id="page-puzzle" class="page active">
+      <div class="card">
+        <div class="card-title">
+          <span>🧩 8-Puzzle Sliding Game</span>
+          <span id="puzzle-status" style="font-size: 0.85rem; color: #a5b4fc;">Goal: (1-8, 0)</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          Tap any tile adjacent to the empty cell (0) to slide it. Solve using A* with Manhattan Distance.
+        </p>
+
+        <div id="puzzle-win-banner" class="alert alert-success" style="display: none;">
+          🎉 PUZZLE SOLVED! Optimal sequence achieved.
+        </div>
+
+        <div class="board-container">
+          <div class="puzzle-board" id="puzzle-grid"></div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric-box">
+            <div class="metric-lbl">Move Count</div>
+            <div class="metric-val" id="puzzle-moves">0</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-lbl">Manhattan Distance (h)</div>
+            <div class="metric-val" id="puzzle-manhattan" style="color: #38bdf8;">0</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-lbl">Misplaced Tiles</div>
+            <div class="metric-val" id="puzzle-misplaced">0</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-lbl">Solvable Parity</div>
+            <div class="metric-val" id="puzzle-parity" style="color: #34d399;">Yes (Even)</div>
+          </div>
+        </div>
+
+        <div class="slider-container">
+          <div class="slider-label">
+            <span>Shuffle Random Walk Steps</span>
+            <span id="shuffle-depth-val" style="color: #a5b4fc;">10</span>
+          </div>
+          <input type="range" id="shuffle-depth" min="2" max="30" value="10" oninput="document.getElementById('shuffle-depth-val').innerText = this.value">
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="shufflePuzzle()">🎲 Shuffle</button>
+          <button class="btn btn-accent" id="btn-solve" onclick="solvePuzzleAStar()">⚡ AI Solve (A*)</button>
+          <button class="btn btn-secondary" onclick="resetPuzzle()">🔄 Reset Goal</button>
+        </div>
       </div>
-      <code>streamlit run app.py</code>
     </div>
 
-    <div class="grid">
+    <!-- PAGE 2: TIC-TAC-TOE -->
+    <div id="page-ttt" class="page">
       <div class="card">
-        <div>
-          <h3>📊 Interactive Presentation</h3>
-          <p>Slide deck covering system architecture, mathematical formulations, state-space comparison, and empirical findings.</p>
+        <div class="card-title">
+          <span>🎮 Tic-Tac-Toe vs Minimax AI</span>
+          <span id="ttt-turn" style="font-size: 0.85rem; color: #38bdf8;">You: X | AI: O</span>
         </div>
-        <a href="presentation.html" class="btn btn-primary">Open Slide Deck &rarr;</a>
-      </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+          Human plays as <strong>X</strong>. AI explores game tree with <strong>Depth-Limited Minimax</strong>.
+        </p>
 
-      <div class="card">
-        <div>
-          <h3>🎓 Viva Defense Guide</h3>
-          <p>Complete academic explanation guide with answers to faculty questions on pruning, heuristics, and time/space complexity.</p>
-        </div>
-        <a href="viva_explanation.html" class="btn btn-secondary">Open Viva Guide &rarr;</a>
-      </div>
+        <div id="ttt-result-banner" class="alert alert-info" style="display: none;"></div>
 
-      <div class="card">
-        <div>
-          <h3>📘 Dual-Game Architecture</h3>
-          <p>Detailed technical documentation of the 8-Puzzle sliding tile solver and Tic-Tac-Toe Minimax decision tree profiler.</p>
+        <div class="board-container">
+          <div class="ttt-board" id="ttt-grid"></div>
         </div>
-        <a href="dual_game_guide.html" class="btn btn-secondary">Open Architecture &rarr;</a>
-      </div>
 
-      <div class="card">
-        <div>
-          <h3>📄 Download Official PDF</h3>
-          <p>Formatted academic guide containing complete algorithm explanations, formulas, and viva answers.</p>
+        <div class="slider-container">
+          <div class="slider-label">
+            <span>Minimax Search Depth Limit</span>
+            <span id="ttt-depth-val" style="color: #ec4899; font-weight: 800;">5</span>
+          </div>
+          <input type="range" id="ttt-depth" min="1" max="9" value="5" oninput="document.getElementById('ttt-depth-val').innerText = this.value">
         </div>
-        <a href="AI_Search_Analysis_Viva_Explanation_Guide.pdf" download class="btn btn-secondary">Download PDF &darr;</a>
+
+        <div class="metrics">
+          <div class="metric-box">
+            <div class="metric-lbl">Nodes Explored</div>
+            <div class="metric-val" id="ttt-nodes" style="color: #38bdf8;">0</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-lbl">Cutoff Nodes</div>
+            <div class="metric-val" id="ttt-cutoffs" style="color: #f59e0b;">0</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-lbl">Latency (ms)</div>
+            <div class="metric-val" id="ttt-time">0.0 ms</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-lbl">Minimax Score</div>
+            <div class="metric-val" id="ttt-score" style="color: #a5b4fc;">-</div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-danger" onclick="resetTTT()">🔄 Restart Match</button>
+        </div>
       </div>
     </div>
 
-    <footer>
-      Project 43 &bull; Developed with Python 3.13, Streamlit, Matplotlib & NumPy
-    </footer>
+    <!-- PAGE 3: SEARCH ANALYSIS -->
+    <div id="page-analytics" class="page">
+      <div class="card">
+        <div class="card-title">
+          <span>📊 Search Performance Profiler</span>
+          <button class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.78rem;" onclick="runBenchmark()">▶ Run Benchmark</button>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Empirical comparison of node expansion rates and depth cutoff thresholds across Depths 1 to 9.
+        </p>
+        <div style="position: relative; height: 260px; width: 100%;">
+          <canvas id="benchmarkChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚖️ Mathematical Formulation</div>
+        <div style="font-size: 0.88rem; line-height: 1.6; color: #cbd5e1;">
+          <p><strong>8-Puzzle State Space:</strong> $9!/2 = 181,440$ reachable states. Branching factor $b \approx 2.67$.</p>
+          <p style="margin-top: 0.4rem;"><strong>A* Heuristic:</strong> $f(n) = g(n) + h(n)$, where $h(n)$ is Manhattan Distance ($\sum |x_i - x_g| + |y_i - y_g|$). Admissible & consistent.</p>
+          <p style="margin-top: 0.4rem;"><strong>Tic-Tac-Toe Minimax:</strong> Zero-sum 2-player adversarial search. Game tree size $9! = 362,880$. Value propagation: $\max_{a \in A} \min_{b \in B} \text{Utility}(s)$.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 4: VIVA & DOCS -->
+    <div id="page-docs" class="page">
+      <div class="card">
+        <div class="card-title">🎓 Academic Guides & Decks</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Comprehensive documentation, viva defense guide, and presentation slides.
+        </p>
+
+        <a href="presentation.html" class="resource-link">
+          <span>📊 Interactive Presentation Slide Deck</span>
+          <span>&rarr;</span>
+        </a>
+
+        <a href="viva_explanation.html" class="resource-link">
+          <span>🎓 Faculty Viva Defense & Question Guide</span>
+          <span>&rarr;</span>
+        </a>
+
+        <a href="dual_game_guide.html" class="resource-link">
+          <span>📘 Dual-Game Architecture Specs</span>
+          <span>&rarr;</span>
+        </a>
+
+        <a href="AI_Search_Analysis_Viva_Explanation_Guide.pdf" download class="resource-link" style="border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.15);">
+          <span>📄 Download Official PDF Report</span>
+          <span>&darr;</span>
+        </a>
+      </div>
+    </div>
+
   </div>
+
+  <!-- BOTTOM MOBILE NAVIGATION -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('puzzle')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
+      <span>8-Puzzle</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('ttt')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+      <span>Tic-Tac-Toe</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('analytics')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span>Analytics</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('docs')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      <span>Docs & Viva</span>
+    </div>
+  </nav>
+
+  <script>
+    // NAVIGATION SWITCHER
+    function switchTab(tabId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      const targetPage = document.getElementById('page-' + tabId);
+      if (targetPage) targetPage.classList.add('active');
+
+      const tabs = ['puzzle', 'ttt', 'analytics', 'docs'];
+      const idx = tabs.indexOf(tabId);
+      if (idx !== -1) {
+        document.querySelectorAll('.nav-item')[idx].classList.add('active');
+      }
+      if (tabId === 'analytics') {
+        renderChart();
+      }
+    }
+
+    // ==========================================
+    // GAME 1: 8-PUZZLE ENGINE & A* SOLVER
+    // ==========================================
+    const GOAL_STATE = [1, 2, 3, 4, 5, 6, 7, 8, 0];
+    let puzzleBoard = [...GOAL_STATE];
+    let puzzleMoves = 0;
+    let isSolving = false;
+
+    function renderPuzzle() {
+      const grid = document.getElementById('puzzle-grid');
+      grid.innerHTML = '';
+      puzzleBoard.forEach((val, idx) => {
+        const tile = document.createElement('div');
+        tile.className = 'puzzle-tile';
+        if (val === 0) {
+          tile.classList.add('empty');
+          tile.innerText = '';
+        } else {
+          tile.innerText = val;
+          if (val === GOAL_STATE[idx]) tile.classList.add('correct');
+          tile.onclick = () => onTileClick(idx);
+        }
+        grid.appendChild(tile);
+      });
+
+      document.getElementById('puzzle-moves').innerText = puzzleMoves;
+      const h = calcManhattan(puzzleBoard);
+      document.getElementById('puzzle-manhattan').innerText = h;
+      document.getElementById('puzzle-misplaced').innerText = calcMisplaced(puzzleBoard);
+
+      const isWon = h === 0;
+      document.getElementById('puzzle-win-banner').style.display = isWon && puzzleMoves > 0 ? 'block' : 'none';
+    }
+
+    function calcManhattan(state) {
+      let dist = 0;
+      for (let i = 0; i < 9; i++) {
+        const val = state[i];
+        if (val !== 0) {
+          const targetIdx = val - 1;
+          const r1 = Math.floor(i / 3), c1 = i % 3;
+          const r2 = Math.floor(targetIdx / 3), c2 = targetIdx % 3;
+          dist += Math.abs(r1 - r2) + Math.abs(c1 - c2);
+        }
+      }
+      return dist;
+    }
+
+    function calcMisplaced(state) {
+      let count = 0;
+      for (let i = 0; i < 9; i++) {
+        if (state[i] !== 0 && state[i] !== GOAL_STATE[i]) count++;
+      }
+      return count;
+    }
+
+    function getAdjacent(idx) {
+      const r = Math.floor(idx / 3), c = idx % 3;
+      const adj = [];
+      if (r > 0) adj.push(idx - 3);
+      if (r < 2) adj.push(idx + 3);
+      if (c > 0) adj.push(idx - 1);
+      if (c < 2) adj.push(idx + 1);
+      return adj;
+    }
+
+    function onTileClick(idx) {
+      if (isSolving) return;
+      const emptyIdx = puzzleBoard.indexOf(0);
+      if (getAdjacent(emptyIdx).includes(idx)) {
+        puzzleBoard[emptyIdx] = puzzleBoard[idx];
+        puzzleBoard[idx] = 0;
+        puzzleMoves++;
+        renderPuzzle();
+      }
+    }
+
+    function shufflePuzzle() {
+      if (isSolving) return;
+      const steps = parseInt(document.getElementById('shuffle-depth').value) || 10;
+      puzzleBoard = [...GOAL_STATE];
+      let lastEmpty = -1;
+      for (let i = 0; i < steps; i++) {
+        const emptyIdx = puzzleBoard.indexOf(0);
+        const adj = getAdjacent(emptyIdx).filter(x => x !== lastEmpty);
+        const chosen = adj[Math.floor(Math.random() * adj.length)];
+        puzzleBoard[emptyIdx] = puzzleBoard[chosen];
+        puzzleBoard[chosen] = 0;
+        lastEmpty = emptyIdx;
+      }
+      puzzleMoves = 0;
+      renderPuzzle();
+    }
+
+    function resetPuzzle() {
+      if (isSolving) return;
+      puzzleBoard = [...GOAL_STATE];
+      puzzleMoves = 0;
+      renderPuzzle();
+    }
+
+    async function solvePuzzleAStar() {
+      if (isSolving) return;
+      const initialH = calcManhattan(puzzleBoard);
+      if (initialH === 0) {
+        alert("Board is already solved at goal state!");
+        return;
+      }
+
+      isSolving = true;
+      document.getElementById('btn-solve').innerText = "Computing...";
+
+      // Run A* Search in Web Worker / async chunk
+      setTimeout(async () => {
+        const path = findAStarPath([...puzzleBoard]);
+        if (!path || path.length === 0) {
+          alert("No solution path found within search frontier limits.");
+          isSolving = false;
+          document.getElementById('btn-solve').innerText = "⚡ AI Solve (A*)";
+          return;
+        }
+
+        document.getElementById('btn-solve').innerText = `Solving (${path.length} steps)...`;
+        for (const state of path) {
+          puzzleBoard = [...state];
+          puzzleMoves++;
+          renderPuzzle();
+          await new Promise(r => setTimeout(r, 220));
+        }
+
+        isSolving = false;
+        document.getElementById('btn-solve').innerText = "⚡ AI Solve (A*)";
+      }, 50);
+    }
+
+    function findAStarPath(startState) {
+      const startKey = startState.join(',');
+      const goalKey = GOAL_STATE.join(',');
+      if (startKey === goalKey) return [];
+
+      const openSet = [{ state: startState, g: 0, f: calcManhattan(startState), path: [] }];
+      const closed = new Set();
+
+      let iterations = 0;
+      while (openSet.length > 0 && iterations < 3500) {
+        iterations++;
+        openSet.sort((a, b) => a.f - b.f);
+        const current = openSet.shift();
+        const key = current.state.join(',');
+
+        if (key === goalKey) return current.path;
+        closed.add(key);
+
+        const emptyIdx = current.state.indexOf(0);
+        for (const adjIdx of getAdjacent(emptyIdx)) {
+          const nextState = [...current.state];
+          nextState[emptyIdx] = nextState[adjIdx];
+          nextState[adjIdx] = 0;
+
+          const nextKey = nextState.join(',');
+          if (closed.has(nextKey)) continue;
+
+          const g = current.g + 1;
+          const h = calcManhattan(nextState);
+          const f = g + h;
+
+          openSet.push({
+            state: nextState,
+            g: g,
+            f: f,
+            path: [...current.path, nextState]
+          });
+        }
+      }
+      return null;
+    }
+
+    // ==========================================
+    // GAME 2: TIC-TAC-TOE & MINIMAX AI
+    // ==========================================
+    let tttBoard = Array(9).fill('');
+    let isGameOver = false;
+
+    function renderTTT() {
+      const grid = document.getElementById('ttt-grid');
+      grid.innerHTML = '';
+      tttBoard.forEach((val, idx) => {
+        const cell = document.createElement('div');
+        cell.className = 'ttt-cell';
+        if (val === 'X') cell.classList.add('x');
+        if (val === 'O') cell.classList.add('o');
+        cell.innerText = val;
+        cell.onclick = () => onTTTClick(idx);
+        grid.appendChild(cell);
+      });
+    }
+
+    function checkWinner(b) {
+      const lines = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
+      ];
+      for (const [x, y, z] of lines) {
+        if (b[x] && b[x] === b[y] && b[x] === b[z]) return { winner: b[x], line: [x, y, z] };
+      }
+      if (b.every(c => c !== '')) return { winner: 'DRAW', line: [] };
+      return null;
+    }
+
+    function onTTTClick(idx) {
+      if (isGameOver || tttBoard[idx] !== '') return;
+      tttBoard[idx] = 'X';
+      renderTTT();
+
+      const res = checkWinner(tttBoard);
+      if (res) {
+        endTTT(res);
+        return;
+      }
+
+      // AI Move
+      setTimeout(makeAIMove, 100);
+    }
+
+    function makeAIMove() {
+      if (isGameOver) return;
+      const depthLimit = parseInt(document.getElementById('ttt-depth').value) || 5;
+      
+      const t0 = performance.now();
+      let nodesGen = 0;
+      let cutoffs = 0;
+
+      function minimax(board, depth, isMax) {
+        nodesGen++;
+        const stateWin = checkWinner(board);
+        if (stateWin) {
+          if (stateWin.winner === 'O') return 10 - depth;
+          if (stateWin.winner === 'X') return depth - 10;
+          return 0;
+        }
+        if (depth >= depthLimit) {
+          cutoffs++;
+          return evaluateHeuristic(board);
+        }
+
+        if (isMax) {
+          let best = -Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+              board[i] = 'O';
+              best = Math.max(best, minimax(board, depth + 1, false));
+              board[i] = '';
+            }
+          }
+          return best;
+        } else {
+          let best = Infinity;
+          for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+              board[i] = 'X';
+              best = Math.min(best, minimax(board, depth + 1, true));
+              board[i] = '';
+            }
+          }
+          return best;
+        }
+      }
+
+      function evaluateHeuristic(b) {
+        let score = 0;
+        const lines = [
+          [0, 1, 2], [3, 4, 5], [6, 7, 8],
+          [0, 3, 6], [1, 4, 7], [2, 5, 8],
+          [0, 4, 8], [2, 4, 6]
+        ];
+        lines.forEach(l => {
+          const vals = [b[l[0]], b[l[1]], b[l[2]]];
+          const countO = vals.filter(v => v === 'O').length;
+          const countX = vals.filter(v => v === 'X').length;
+          if (countO > 0 && countX === 0) score += (countO === 2 ? 3 : 1);
+          if (countX > 0 && countO === 0) score -= (countX === 2 ? 3 : 1);
+        });
+        return score;
+      }
+
+      let bestScore = -Infinity;
+      let bestMove = -1;
+      for (let i = 0; i < 9; i++) {
+        if (tttBoard[i] === '') {
+          tttBoard[i] = 'O';
+          const score = minimax(tttBoard, 0, false);
+          tttBoard[i] = '';
+          if (score > bestScore) {
+            bestScore = score;
+            bestMove = i;
+          }
+        }
+      }
+
+      const t1 = performance.now();
+      document.getElementById('ttt-nodes').innerText = nodesGen.toLocaleString();
+      document.getElementById('ttt-cutoffs').innerText = cutoffs.toLocaleString();
+      document.getElementById('ttt-time').innerText = `${(t1 - t0).toFixed(2)} ms`;
+      document.getElementById('ttt-score').innerText = bestScore;
+
+      if (bestMove !== -1) {
+        tttBoard[bestMove] = 'O';
+        renderTTT();
+        const res = checkWinner(tttBoard);
+        if (res) endTTT(res);
+      }
+    }
+
+    function endTTT(res) {
+      isGameOver = true;
+      const banner = document.getElementById('ttt-result-banner');
+      banner.style.display = 'block';
+      if (res.winner === 'X') {
+        banner.className = 'alert alert-success';
+        banner.innerText = '🏆 You Win!';
+      } else if (res.winner === 'O') {
+        banner.className = 'alert alert-warning';
+        banner.innerText = '🤖 AI (O) Wins with Minimax strategy!';
+      } else {
+        banner.className = 'alert alert-info';
+        banner.innerText = '🤝 Stalemate! Optimal game reached (Draw).';
+      }
+
+      if (res.line.length > 0) {
+        const cells = document.querySelectorAll('.ttt-cell');
+        res.line.forEach(i => cells[i].classList.add('win'));
+      }
+    }
+
+    function resetTTT() {
+      tttBoard = Array(9).fill('');
+      isGameOver = false;
+      document.getElementById('ttt-result-banner').style.display = 'none';
+      document.getElementById('ttt-nodes').innerText = '0';
+      document.getElementById('ttt-cutoffs').innerText = '0';
+      document.getElementById('ttt-time').innerText = '0.0 ms';
+      document.getElementById('ttt-score').innerText = '-';
+      renderTTT();
+    }
+
+    // ==========================================
+    // CHART.JS BENCHMARK SUITE
+    // ==========================================
+    let myChart = null;
+    function renderChart() {
+      if (myChart) return;
+      const ctx = document.getElementById('benchmarkChart').getContext('2d');
+      const depths = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+      const nodesTTT = [10, 82, 586, 3610, 18730, 73450, 221626, 422074, 549946];
+      const cutoffs = [9, 72, 504, 2880, 12600, 36240, 68040, 50400, 0];
+
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: depths.map(d => `Depth ${d}`),
+          datasets: [
+            {
+              label: 'Minimax Nodes Explored',
+              data: nodesTTT,
+              backgroundColor: 'rgba(99, 102, 241, 0.75)',
+              borderColor: '#6366f1',
+              borderWidth: 1.5,
+              borderRadius: 6
+            },
+            {
+              label: 'Cutoff Nodes Threshold',
+              data: cutoffs,
+              backgroundColor: 'rgba(245, 158, 11, 0.75)',
+              borderColor: '#f59e0b',
+              borderWidth: 1.5,
+              borderRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' } }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#94a3b8', font: { size: 10 } },
+              grid: { color: 'rgba(255, 255, 255, 0.05)' }
+            },
+            y: {
+              type: 'logarithmic',
+              ticks: { color: '#94a3b8', font: { size: 10 } },
+              grid: { color: 'rgba(255, 255, 255, 0.08)' }
+            }
+          }
+        }
+      });
+    }
+
+    function runBenchmark() {
+      switchTab('analytics');
+      if (myChart) {
+        myChart.reset();
+        myChart.update();
+      }
+    }
+
+    // INIT
+    renderPuzzle();
+    renderTTT();
+  </script>
 </body>
 </html>
