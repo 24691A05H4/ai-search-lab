@@ -798,17 +798,38 @@ elif selected_nav == "🎮 Tic-Tac-Toe Game":
     st.markdown("## 🎮 Play Tic-Tac-Toe vs Minimax AI")
     st.caption("Human plays as 'X' (First Mover) | AI plays as 'O' (Depth-Limited Minimax)")
 
-    # Depth Selector for active game
+    # Difficulty & Depth Selector for active game
     st.sidebar.markdown("---")
-    st.sidebar.markdown("### ⚙️ Tic-Tac-Toe Search Depth")
-    ttt_depth = st.sidebar.slider(
-        "Search Depth Limit",
-        min_value=1,
-        max_value=9,
-        value=5,
-        step=1,
-        help="Restricts how many plies deep the Minimax recursion will explore.",
+    st.sidebar.markdown("### 🎚️ AI Difficulty Level")
+    difficulty_option = st.sidebar.radio(
+        "Select Game Difficulty",
+        ["🟢 Easy", "🟡 Medium", "🔴 Hard (Unbeatable)", "⚙️ Custom Depth"],
+        index=2,
+        help="Easy: Casual play with frequent blunders. Medium: Tactical defense. Hard: Unbeatable Minimax."
     )
+
+    if difficulty_option == "🟢 Easy":
+        ttt_depth = 1
+        diff_mode = "Easy"
+        st.sidebar.caption("🌱 **Easy:** AI explores 1 ply and makes frequent mistakes.")
+    elif difficulty_option == "🟡 Medium":
+        ttt_depth = 3
+        diff_mode = "Medium"
+        st.sidebar.caption("⚔️ **Medium:** AI explores 3 plies with balanced strategy.")
+    elif difficulty_option == "🔴 Hard (Unbeatable)":
+        ttt_depth = 9
+        diff_mode = "Hard"
+        st.sidebar.caption("👑 **Hard:** Unbeatable Depth-9 Minimax.")
+    else:
+        diff_mode = "Hard"
+        ttt_depth = st.sidebar.slider(
+            "Custom Search Depth Limit",
+            min_value=1,
+            max_value=9,
+            value=5,
+            step=1,
+            help="Restricts how many plies deep the Minimax recursion will explore.",
+        )
 
     game = st.session_state.game
     winner = game.check_winner()
@@ -821,7 +842,7 @@ elif selected_nav == "🎮 Tic-Tac-Toe Game":
     elif winner == "Draw":
         st.warning("🤝 **DRAW GAME!** Stalemate reached.")
     else:
-        st.info(f"⏳ **Active Match** — Current Turn: **{game.current_turn}** ({'Human' if game.current_turn == 'X' else 'AI'})")
+        st.info(f"⏳ **Active Match** — Current Turn: **{game.current_turn}** ({'Human' if game.current_turn == 'X' else 'AI'}) | Difficulty: **{difficulty_option}**")
 
     col_board, col_telemetry = st.columns([1.2, 1])
 
@@ -849,7 +870,7 @@ elif selected_nav == "🎮 Tic-Tac-Toe Game":
 
                     # Trigger AI Move if game not finished
                     if not game.is_game_over():
-                        best_move, analysis = get_best_ai_move(game, max_depth=ttt_depth)
+                        best_move, analysis = get_best_ai_move(game, max_depth=ttt_depth, difficulty=diff_mode)
                         if best_move is not None:
                             game.make_move(best_move, "O")
                             st.session_state.last_ai_analysis = analysis

@@ -3,6 +3,7 @@ minimax.py - Depth-Limited Minimax Algorithm with Heuristic Evaluation
 Implements search tree exploration, cutoff handling, and performance metrics tracking.
 """
 
+import random
 import time
 from typing import Dict, List, Optional, Tuple
 from game import TicTacToeGame
@@ -157,14 +158,15 @@ def minimax(
 
 
 def get_best_ai_move(
-    game: TicTacToeGame, max_depth: int = 9
+    game: TicTacToeGame, max_depth: int = 9, difficulty: str = "Hard"
 ) -> Tuple[Optional[int], Dict]:
     """
-    Determines the optimal AI move for 'O' using Depth-Limited Minimax.
+    Determines the AI move for 'O' using Depth-Limited Minimax with difficulty profiles.
 
     Parameters:
         game: TicTacToeGame instance
         max_depth: Search depth limit (1 to 9)
+        difficulty: 'Easy', 'Medium', or 'Hard'
 
     Returns:
         (best_move_index, analysis_dict)
@@ -172,6 +174,17 @@ def get_best_ai_move(
     available_moves = game.get_available_moves()
     if not available_moves or game.is_game_over():
         return None, {}
+
+    # Adjust search depth and mistake rate by difficulty
+    if difficulty == "Easy":
+        actual_depth = 1
+        mistake_rate = 0.65  # 65% chance of picking a random/casual move
+    elif difficulty == "Medium":
+        actual_depth = min(max_depth, 3)
+        mistake_rate = 0.25  # 25% chance of picking a suboptimal move
+    else:  # Hard (Unbeatable)
+        actual_depth = max_depth
+        mistake_rate = 0.0
 
     stats = SearchStatistics()
     stats.start_timer()
@@ -192,7 +205,7 @@ def get_best_ai_move(
             game=game,
             current_depth=1,
             is_maximizing=False,
-            max_depth=max_depth,
+            max_depth=actual_depth,
             stats=stats,
         )
         game.undo_move(move, previous_turn="O")
@@ -204,10 +217,19 @@ def get_best_ai_move(
 
     stats.stop_timer()
 
+    # Apply difficulty decision
+    selected_move = best_move
+    if mistake_rate > 0 and random.random() < mistake_rate:
+        # Easy/Medium: occasionally pick an alternate valid move to simulate human blunders
+        other_moves = [m for m in available_moves if m != best_move]
+        if other_moves:
+            selected_move = random.choice(other_moves)
+
     analysis = {
-        "selected_move": best_move,
-        "evaluation_score": best_score,
-        "max_depth_setting": max_depth,
+        "selected_move": selected_move,
+        "evaluation_score": move_scores.get(selected_move, best_score),
+        "difficulty": difficulty,
+        "max_depth_setting": actual_depth,
         "max_depth_reached": stats.max_depth_reached,
         "nodes_generated": stats.nodes_generated,
         "nodes_expanded": stats.nodes_expanded,
@@ -218,5 +240,5 @@ def get_best_ai_move(
         "available_moves_count": len(available_moves),
     }
 
-    return best_move, analysis
+    return selected_move, analysis
 

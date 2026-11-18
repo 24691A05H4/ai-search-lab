@@ -414,6 +414,15 @@
 
         <div id="ttt-result-banner" class="alert alert-info" style="display: none;"></div>
 
+        <div style="margin: 0.75rem 0;">
+          <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase;">Select Difficulty:</div>
+          <div style="display: flex; gap: 0.4rem;">
+            <button class="btn btn-secondary ttt-diff-btn" id="btn-diff-easy" onclick="setTTTDifficulty('Easy')" style="padding: 0.5rem; font-size: 0.82rem;">🟢 Easy</button>
+            <button class="btn btn-secondary ttt-diff-btn" id="btn-diff-medium" onclick="setTTTDifficulty('Medium')" style="padding: 0.5rem; font-size: 0.82rem;">🟡 Medium</button>
+            <button class="btn btn-primary ttt-diff-btn" id="btn-diff-hard" onclick="setTTTDifficulty('Hard')" style="padding: 0.5rem; font-size: 0.82rem;">🔴 Hard</button>
+          </div>
+        </div>
+
         <div class="board-container">
           <div class="ttt-board" id="ttt-grid"></div>
         </div>
@@ -421,9 +430,9 @@
         <div class="slider-container">
           <div class="slider-label">
             <span>Minimax Search Depth Limit</span>
-            <span id="ttt-depth-val" style="color: #ec4899; font-weight: 800;">5</span>
+            <span id="ttt-depth-val" style="color: #ec4899; font-weight: 800;">9 (Hard)</span>
           </div>
-          <input type="range" id="ttt-depth" min="1" max="9" value="5" oninput="document.getElementById('ttt-depth-val').innerText = this.value">
+          <input type="range" id="ttt-depth" min="1" max="9" value="9" oninput="document.getElementById('ttt-depth-val').innerText = this.value">
         </div>
 
         <div class="metrics">
@@ -772,9 +781,45 @@
       setTimeout(makeAIMove, 100);
     }
 
+    let currentTTTDiff = 'Hard';
+
+    function setTTTDifficulty(level) {
+      currentTTTDiff = level;
+      document.querySelectorAll('.ttt-diff-btn').forEach(b => {
+        b.classList.remove('btn-primary', 'active');
+        b.classList.add('btn-secondary');
+      });
+      const activeBtn = document.getElementById('btn-diff-' + level.toLowerCase());
+      if (activeBtn) {
+        activeBtn.classList.remove('btn-secondary');
+        activeBtn.classList.add('btn-primary', 'active');
+      }
+      if (level === 'Easy') {
+        document.getElementById('ttt-depth').value = 1;
+        document.getElementById('ttt-depth-val').innerText = '1 (Easy)';
+      } else if (level === 'Medium') {
+        document.getElementById('ttt-depth').value = 3;
+        document.getElementById('ttt-depth-val').innerText = '3 (Medium)';
+      } else {
+        document.getElementById('ttt-depth').value = 9;
+        document.getElementById('ttt-depth-val').innerText = '9 (Unbeatable)';
+      }
+    }
+
     function makeAIMove() {
       if (isGameOver) return;
-      const depthLimit = parseInt(document.getElementById('ttt-depth').value) || 5;
+      let depthLimit = parseInt(document.getElementById('ttt-depth').value) || 5;
+      let mistakeRate = 0.0;
+
+      if (currentTTTDiff === 'Easy') {
+        depthLimit = 1;
+        mistakeRate = 0.65; // Casual blunders so user can easily win
+      } else if (currentTTTDiff === 'Medium') {
+        depthLimit = Math.min(depthLimit, 3);
+        mistakeRate = 0.25; // Balanced tactical play
+      } else {
+        mistakeRate = 0.0;  // Unbeatable Minimax
+      }
       
       const t0 = performance.now();
       let nodesGen = 0;
@@ -844,6 +889,16 @@
             bestScore = score;
             bestMove = i;
           }
+        }
+      }
+
+      // Apply difficulty blunder / mistake factor for Easy and Medium
+      if (mistakeRate > 0 && Math.random() < mistakeRate) {
+        const available = [];
+        for (let i = 0; i < 9; i++) if (tttBoard[i] === '') available.push(i);
+        const altMoves = available.filter(m => m !== bestMove);
+        if (altMoves.length > 0) {
+          bestMove = altMoves[Math.floor(Math.random() * altMoves.length)];
         }
       }
 
