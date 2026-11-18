@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project 43: Dual-Game AI Search Analysis Deck (8-Puzzle & Tic-Tac-Toe)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #04060c;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 28px;
+      background: #080c16;
+      border-bottom: 1px solid #1e293b;
+      z-index: 10;
+    }
+    .badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #00f2fe;
+      background: rgba(0, 242, 254, 0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      text-transform: uppercase;
+    }
+    .slide-counter { font-size: 0.95rem; color: #94a3b8; font-weight: 600; }
+    .deck-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .slide {
+      display: none;
+      width: 94%;
+      max-width: 1200px;
+      height: 86%;
+      max-height: 720px;
+      background: #0b0f1a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+      animation: fadeIn 0.25s ease-out;
+      overflow-y: auto;
+    }
+    .slide.active { display: flex; flex-direction: column; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-title-area { margin-bottom: 20px; border-bottom: 1px solid #1e293b; padding-bottom: 12px; }
+    .slide-cat { font-size: 0.8rem; font-weight: 700; color: #9d4edd; text-transform: uppercase; margin-bottom: 4px; }
+    .slide-title { font-size: 1.85rem; font-weight: 800; color: #f8fafc; }
+    .slide-title span { color: #00f2fe; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+    .card {
+      background: #111726;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .card.highlight { border-color: #00f2fe; box-shadow: 0 0 15px rgba(0, 242, 254, 0.15); }
+    .card.purple { border-color: #9d4edd; box-shadow: 0 0 15px rgba(157, 78, 221, 0.15); }
+    .card-title { font-size: 1.15rem; font-weight: 700; color: #00f2fe; margin-bottom: 12px; }
+    .card-title.purple { color: #9d4edd; }
+    ul { list-style: none; }
+    li { position: relative; padding-left: 18px; margin-bottom: 10px; font-size: 0.92rem; line-height: 1.5; color: #cbd5e1; }
+    li::before { content: "•"; position: absolute; left: 0; color: #00f2fe; font-size: 1.3rem; line-height: 1; }
+    li strong { color: #ffffff; }
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 28px;
+      background: #080c16;
+      border-top: 1px solid #1e293b;
+    }
+    .btn-group { display: flex; gap: 10px; }
+    button {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #00f2fe; color: #04060c; border-color: #00f2fe; }
+    button.primary { background: #00f2fe; color: #04060c; border-color: #00f2fe; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge">Project 43 | Dual-Game AI Search Deck</div>
+    <div class="slide-counter" id="counter">Slide 1 of 6</div>
+  </header>
+
+  <div class="deck-container">
+    <!-- Slide 1 -->
+    <div class="slide active" id="slide-1">
+      <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+        <div class="badge" style="margin-bottom:16px;">B.Tech AI Capstone Project 43</div>
+        <h1 style="font-size:2.6rem; font-weight:800; color:#fff; margin-bottom:12px;">
+          Dual-Game AI Search Analysis Dashboard
+        </h1>
+        <h2 style="font-size:1.3rem; color:#00f2fe; font-weight:600; margin-bottom:28px;">
+          8-Puzzle (DLS / IDDFS / A*) &amp; Tic-Tac-Toe (Depth-Limited Minimax)
+        </h2>
+        <div class="card highlight" style="max-width:820px; width:100%; text-align:left; padding:22px;">
+          <ul>
+            <li><strong>Two Distinct Domains:</strong> Single-agent cyclic state space (8-Puzzle) vs Two-player zero-sum game tree (Tic-Tac-Toe).</li>
+            <li><strong>Core Research Goal:</strong> Compare empirical node generation rates, cutoff thresholds, and execution times across search depths 1 to 9.</li>
+            <li><strong>Zero-PyArrow Compatibility:</strong> Cross-platform HTML/CSS table engine verified on Windows ARM64.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" id="slide-2">
+      <div class="slide-title-area">
+        <div class="slide-cat">Software Engineering Design</div>
+        <div class="slide-title">System Architecture &amp; <span>Modular Structure</span></div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">🧩 8-Puzzle Modules</div>
+          <ul>
+            <li><strong>puzzle.py:</strong> 3×3 sliding tile engine, adjacency graph, inversion parity check (Even = solvable), and Manhattan distance function.</li>
+            <li><strong>puzzle_search.py:</strong> Depth-Limited Search (DLS) with path-based cycle detection, Iterative Deepening Search (IDDFS), and A* Search (Manhattan).</li>
+          </ul>
+        </div>
+        <div class="card purple">
+          <div class="card-title purple">🎮 Tic-Tac-Toe Modules</div>
+          <ul>
+            <li><strong>game.py:</strong> 3×3 board, legal move checking, 8 winning lines check, and O(1) undo_move() backtracking.</li>
+            <li><strong>minimax.py:</strong> Depth-Limited Minimax with line threat and positional heuristics, and node expansion telemetry.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide" id="slide-3">
+      <div class="slide-title-area">
+        <div class="slide-cat">Game 1 Algorithms</div>
+        <div class="slide-title">8-Puzzle Search <span>Mechanics</span></div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">DLS with Path Cycle Detection</div>
+          <ul>
+            <li><strong>Path-Based Cycle Detection:</strong> The 8-puzzle graph has cycles (e.g. moving tile left then right). An ancestor set on the current branch prevents infinite recursion.</li>
+            <li><strong>Cutoff Definition:</strong> Any non-goal node where further expansion is prevented solely by the depth limit.</li>
+          </ul>
+        </div>
+        <div class="card purple">
+          <div class="card-title purple">IDDFS &amp; Manhattan Heuristic</div>
+          <ul>
+            <li><strong>Iterative Deepening (IDDFS):</strong> Runs DLS sequentially from depth 0 up to max_depth. Combines BFS completeness with DFS space efficiency O(d).</li>
+            <li><strong>Manhattan Distance:</strong> Admissible &amp; consistent heuristic guiding A* to find the optimal shortest solution path.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="slide" id="slide-4">
+      <div class="slide-title-area">
+        <div class="slide-cat">Game 2 Algorithms</div>
+        <div class="slide-title">Tic-Tac-Toe <span>Adversarial Minimax</span></div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">Minimax Decision Rule</div>
+          <ul>
+            <li>Alternates between MAX (AI 'O') and MIN (Human 'X').</li>
+            <li>Terminal score: <code>+(100 - depth)</code> for AI win (incentivizes fast checkmate) and <code>-(100 - depth)</code> for human win.</li>
+          </ul>
+        </div>
+        <div class="card purple">
+          <div class="card-title purple">Zero Cutoffs at Depth 9</div>
+          <ul>
+            <li>At depth 9, cutoff nodes collapse to <strong>0</strong> because all paths terminate in a win, loss, or draw within 9 plies.</li>
+            <li>At shallow depths (1 to 4), heuristic evaluation drives decisions.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 5 -->
+    <div class="slide" id="slide-5">
+      <div class="slide-title-area">
+        <div class="slide-cat">Comparative Analysis</div>
+        <div class="slide-title">Combined Comparison: <span>8-Puzzle vs Tic-Tac-Toe</span></div>
+      </div>
+      <div class="grid-2">
+        <div class="card highlight">
+          <div class="card-title">Branching Factor &amp; State Space</div>
+          <ul>
+            <li><strong>8-Puzzle:</strong> Branching factor is small: $b \in [2, 4]$ (average $b \approx 2.67$). Cyclic graph.</li>
+            <li><strong>Tic-Tac-Toe:</strong> Branching factor starts high at $b=9$, decreasing by 1 at each ply ($9 \rightarrow 8 \rightarrow 7 \rightarrow \dots$). Directed acyclic tree.</li>
+          </ul>
+        </div>
+        <div class="card purple">
+          <div class="card-title purple">Dashboard Comparison Charts</div>
+          <ul>
+            <li><strong>Nodes Generated:</strong> Grouped bar chart comparing constant branching vs factorial expansion.</li>
+            <li><strong>Cutoff Nodes:</strong> Contrasting single-agent depth truncation vs game-tree terminal bounds.</li>
+            <li><strong>Execution Time:</strong> Millisecond latency across depths 1 to 9.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 6 -->
+    <div class="slide" id="slide-6">
+      <div class="slide-title-area">
+        <div class="slide-cat">Viva Defense Masterclass</div>
+        <div class="slide-title">Summary &amp; <span>Key Viva Questions</span></div>
+      </div>
+      <div class="card highlight" style="padding: 22px;">
+        <ul>
+          <li><strong>Q: Why does 8-Puzzle require cycle detection?</strong><br><em>A: Because sliding a tile is reversible. Without path-based cycle detection, DLS gets trapped in infinite ping-pong loops.</em></li>
+          <li><strong>Q: What is inversion parity in 8-puzzle?</strong><br><em>A: On a 3×3 board, a state is solvable if and only if the number of inversions among tiles 1–8 is even. Shuffling from the goal state guarantees 100% solvability.</em></li>
+          <li><strong>Q: Why does Tic-Tac-Toe have 0 cutoffs at Depth 9?</strong><br><em>A: Every branch terminates in a win, loss, or draw within 9 moves; the depth limit is never breached without reaching a terminal node.</em></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="btn-group">
+      <button onclick="prevSlide()" id="prevBtn">← Previous</button>
+      <button class="primary" onclick="nextSlide()" id="nextBtn">Next Slide →</button>
+      <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    </div>
+    <div class="hint" style="color:#64748b; font-size:0.85rem;">Use Left / Right Arrow Keys to navigate</div>
+  </footer>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 6;
+    function showSlide(n) {
+      if (n < 1) n = 1;
+      if (n > totalSlides) n = totalSlides;
+      currentSlide = n;
+      for (let i = 1; i <= totalSlides; i++) {
+        const s = document.getElementById(`slide-${i}`);
+        if (s) s.classList.remove('active');
+      }
+      const a = document.getElementById(`slide-${currentSlide}`);
+      if (a) a.classList.add('active');
+      document.getElementById('counter').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+      document.getElementById('prevBtn').disabled = (currentSlide === 1);
+      document.getElementById('nextBtn').innerText = (currentSlide === totalSlides) ? 'Finish ✓' : 'Next Slide →';
+    }
+    function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
+    function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') nextSlide();
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') prevSlide();
+    });
+    showSlide(1);
+  </script>
+</body>
+</html>
+

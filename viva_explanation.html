@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project 43: AI Search Analysis Dashboard - Viva Defense & Screen Explanation Guide</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm 16mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.5;
+      font-size: 10.5pt;
+    }
+    .header-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      color: #ffffff;
+      padding: 22px 24px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 6px solid #00f2fe;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(0, 242, 254, 0.18);
+      color: #00f2fe;
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 19pt;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+    .subtitle {
+      font-size: 11pt;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    .meta-bar {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 8.5pt;
+      color: #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .section-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      page-break-inside: avoid;
+    }
+    .section-title {
+      font-size: 13pt;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 6px;
+    }
+    
+    .box {
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      font-size: 10pt;
+    }
+    .box-process {
+      background: #f8fafc;
+      border-left: 4px solid #3b82f6;
+    }
+    .box-use {
+      background: #f0fdf4;
+      border-left: 4px solid #10b981;
+    }
+    .box-speech {
+      background: #f5f3ff;
+      border-left: 4px solid #8b5cf6;
+    }
+    
+    .box-title {
+      font-size: 9pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .box-process .box-title { color: #1d4ed8; }
+    .box-use .box-title { color: #047857; }
+    .box-speech .box-title { color: #6d28d9; }
+
+    ul {
+      margin-left: 18px;
+      margin-top: 4px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    p {
+      margin-bottom: 4px;
+    }
+    .speech-quote {
+      font-style: italic;
+      color: #2e1065;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+    
+    .cheat-sheet {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 5px solid #f59e0b;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      page-break-inside: avoid;
+    }
+    .cheat-sheet h3 {
+      color: #92400e;
+      font-size: 12pt;
+      margin-bottom: 8px;
+    }
+    .qa-item {
+      margin-bottom: 8px;
+    }
+    .qa-q {
+      font-weight: 700;
+      color: #78350f;
+    }
+    .qa-a {
+      color: #451a03;
+      margin-left: 12px;
+    }
+    
+    .footer {
+      text-align: center;
+      font-size: 8pt;
+      color: #94a3b8;
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER BANNER -->
+  <div class="header-banner">
+    <div class="badge">Project 43 | B.Tech CSE AI Viva Defense Guide</div>
+    <h1>Dual-Game AI Search Analysis Dashboard</h1>
+    <div class="subtitle">Screen-by-Screen Working Process, Practical Academic Purpose & Exact Viva Defense Script</div>
+    <div class="meta-bar">
+      <span><strong>Topics:</strong> 8-Puzzle (DLS, IDDFS, A* Manhattan) &amp; Tic-Tac-Toe (Depth-Limited Minimax)</span>
+      <span><strong>Framework:</strong> Python 3.13, Streamlit, Matplotlib, NumPy, Pandas</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section-card">
+    <div class="section-title">1. 🏠 Home Dashboard</div>
+    
+    <div class="box box-process">
+      <div class="box-title">⚙️ Working Process:</div>
+      <p>The Home Dashboard automatically aggregates real-time move and search statistics across both games in active memory. It renders dynamic KPI summary cards displaying: total searches executed, nodes generated, heuristic cutoffs triggered, and average execution latency (ms) for both 8-Puzzle and Tic-Tac-Toe.</p>
+    </div>
+
+    <div class="box box-use">
+      <div class="box-title">🎯 Academic / Practical Use:</div>
+      <p>Provides a unified high-level comparison between a <strong>single-agent deterministic state space</strong> (8-Puzzle) and a <strong>two-player zero-sum adversarial game tree</strong> (Tic-Tac-Toe), validating that both search engines operate in real time under sub-second latencies.</p>
+    </div>
+
+    <div class="box box-speech">
+      <div class="box-title">🗣️ Exact Speech Script for AI Mam:</div>
+      <p class="speech-quote">"Good morning, Ma'am. On the Home Dashboard, we have a unified telemetry overview. Notice that across 9 Tic-Tac-Toe decisions, the AI explored over 25,000 nodes with an average response time of only 34 milliseconds. This demonstrates that our search engine provides real-time performance while evaluating thousands of future board possibilities."</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section-card">
+    <div class="section-title">2. 🧩 8-Puzzle Game & AI Solver</div>
+    
+    <div class="box box-process">
+      <div class="box-title">⚙️ Working Process:</div>
+      <ul>
+        <li><strong>Interactive Sliding Board:</strong> Users click any adjacent tile to slide it into the <code>EMPTY</code> cell.</li>
+        <li><strong>Solvability Parity Theorem:</strong> On a 3×3 grid, a puzzle state is solvable if and only if its inversion count is <strong>EVEN</strong>. Shuffling executes valid random moves from the goal state, mathematically guaranteeing <strong>100% solvable configurations</strong>.</li>
+        <li><strong>AI Solver:</strong> Employs <strong>A* Search with Manhattan Distance</strong> ($h(n) = \sum |r - r^*| + |c - c^*|$) to find the optimal shortest path to the goal with step-by-step playback.</li>
+      </ul>
+    </div>
+
+    <div class="box box-use">
+      <div class="box-title">🎯 Academic / Practical Use:</div>
+      <p>Demonstrates legal state-space transitions, inversion parity mathematical guarantees, and informed heuristic search path planning.</p>
+    </div>
+
+    <div class="box box-speech">
+      <div class="box-title">🗣️ Exact Speech Script for AI Mam:</div>
+      <p class="speech-quote">"Ma'am, on this page, the user can play the 8-puzzle interactively. Notice the 'Solvable Parity: Yes (Even)' metric. In AI theory, half of all random 8-puzzle permutations are mathematically unsolvable because their inversion count is odd. Our shuffle algorithm guarantees solvability by applying legal transitions from the goal state. When the user clicks 'Solve with AI', our A* search uses the admissible Manhattan Distance heuristic to compute the shortest solution path."</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section-card">
+    <div class="section-title">3. 🔍 8-Puzzle Search Analysis & Profiler</div>
+    
+    <div class="box box-process">
+      <div class="box-title">⚙️ Working Process:</div>
+      <ul>
+        <li>Takes a fixed baseline puzzle state (Current Active Board or verified presets from 1 to 8 moves away).</li>
+        <li>Executes <strong>Depth-Limited Search (DLS)</strong> across depths 1 through $N$ using <strong>path-based cycle detection</strong> (ancestor state hash set) to avoid infinite loops in reversible tile actions.</li>
+        <li>Generates 3 Matplotlib profiling charts: <em>Depth vs Nodes Generated</em>, <em>Depth vs Cutoff Nodes</em>, and <em>Depth vs Execution Time (ms)</em>.</li>
+      </ul>
+    </div>
+
+    <div class="box box-use">
+      <div class="box-title">🎯 Academic / Practical Use:</div>
+      <p>Empirically visualizes how search depth limits truncate cyclic graphs, quantifying the exact boundary where depth limits prevent exponential state explosion.</p>
+    </div>
+
+    <div class="box box-speech">
+      <div class="box-title">🗣️ Exact Speech Script for AI Mam:</div>
+      <p class="speech-quote">"Ma'am, this module performs empirical profiling of Depth-Limited Search. In 8-puzzle, moving a tile left and then right creates a cycle. Our algorithm implements path-based cycle detection to prune duplicate states. As we increase the search depth, the graphs plot the growth of generated nodes and show the exact point where the depth limit cuts off non-goal branches."</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section-card">
+    <div class="section-title">4. 🎮 Play Tic-Tac-Toe vs Minimax AI</div>
+    
+    <div class="box box-process">
+      <div class="box-title">⚙️ Working Process:</div>
+      <ul>
+        <li>Human plays as 'X' and AI plays as 'O' on an interactive 3×3 grid.</li>
+        <li>On every turn, the AI executes <strong>Depth-Limited Minimax</strong>: maximizing for 'O', minimizing for 'X', checking winning lines, and evaluating cutoff states using line threat and positional heuristics.</li>
+        <li>Displays live move telemetry on the sidebar: Nodes Explored, Nodes Expanded, Cutoffs, and Execution Latency (ms).</li>
+      </ul>
+    </div>
+
+    <div class="box box-use">
+      <div class="box-title">🎯 Academic / Practical Use:</div>
+      <p>Proves that the AI engine is actively calculating the search tree on every ply rather than relying on static look-up tables or scripted moves.</p>
+    </div>
+
+    <div class="box box-speech">
+      <div class="box-title">🗣️ Exact Speech Script for AI Mam:</div>
+      <p class="speech-quote">"Here, the human plays against our Depth-Limited Minimax AI. On every turn, the AI explores future game paths down to the configured depth. Notice the real-time telemetry: the AI generated 5 nodes and expanded 3 nodes in just 0.067 milliseconds. The candidate move evaluation chart shows how the AI scored each available cell before making its move."</p>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section-card">
+    <div class="section-title">5. 📊 Tic-Tac-Toe Search Analysis & Depths 1–9 Benchmark</div>
+    
+    <div class="box box-process">
+      <div class="box-title">⚙️ Working Process:</div>
+      <ul>
+        <li><strong>Move Progression:</strong> Inspects past AI moves to observe how tree size changes as the grid fills.</li>
+        <li><strong>Depths 1–9 Benchmark:</strong> Evaluates the <strong>exact same initial board</strong> across all 9 depths sequentially.</li>
+        <li>Generates a 4-panel dashboard: (1) Total Nodes Generated, (2) Heuristic Cutoffs vs Terminal Leaves, (3) Execution Time (ms), and (4) Minimax Score.</li>
+      </ul>
+    </div>
+
+    <div class="box box-use">
+      <div class="box-title">🎯 Academic / Practical Use:</div>
+      <p>Validates game-tree complexity theory: proves exponential growth $\mathcal{O}(b^d)$ and shows that at Depth 9, heuristic cutoffs collapse to <strong>exactly zero</strong> because every branch reaches a terminal win, loss, or draw.</p>
+    </div>
+
+    <div class="box box-speech">
+      <div class="box-title">🗣️ Exact Speech Script for AI Mam:</div>
+      <p class="speech-quote">"Ma'am, this is our benchmark module. We evaluate Minimax from Depth 1 to Depth 9 on the exact same board state. Please observe the second graph: at shallow depths (1 to 4), heuristic cutoffs dominate because the search horizon is reached early. But at Depth 9, heuristic cutoffs drop to exactly zero because all 9 cells are explored to a terminal win, loss, or draw. This confirms game-tree theory with real empirical data."</p>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section-card">
+    <div class="section-title">6. ⚖️ Combined Performance Comparison</div>
+    
+    <div class="box box-process">
+      <div class="box-title">⚙️ Working Process:</div>
+      <ul>
+        <li>Runs both 8-Puzzle (DLS) and Tic-Tac-Toe (Minimax) across common depths (Depths 1 to 9).</li>
+        <li>Plots side-by-side grouped bar charts for Nodes Generated, Cutoff Nodes, and Execution Latency.</li>
+        <li>Provides a clean CSV export button to download the empirical research dataset.</li>
+      </ul>
+    </div>
+
+    <div class="box box-use">
+      <div class="box-title">🎯 Academic / Practical Use:</div>
+      <p>Directly compares branching factor differences between a constant branching graph ($b \approx 2.67$) and factorial-style game tree expansion ($b \le 9 \rightarrow 8 \rightarrow \dots$).</p>
+    </div>
+
+    <div class="box box-speech">
+      <div class="box-title">🗣️ Exact Speech Script for AI Mam:</div>
+      <p class="speech-quote">"Ma'am, this combined section is the core analytical contribution of our project. We directly compare single-agent search with adversarial search on the same depth axis. In 8-Puzzle, the branching factor is between 2 and 4 (average 2.67), whereas Tic-Tac-Toe starts at 9 and decreases by 1 at each ply. The graphs clearly illustrate the difference in node explosion rates between the two game structures."</p>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section-card">
+    <div class="section-title">7. 🔬 AI Algorithm Visualizer (Step-by-Step)</div>
+    
+    <div class="box box-process">
+      <div class="box-title">⚙️ Working Process:</div>
+      <ul>
+        <li><strong>Event Logger:</strong> Records live execution events: <code>NODE_GENERATED</code>, <code>NODE_SELECTED</code>, <code>NODE_EXPANDED</code>, <code>NODE_CUTOFF</code>, <code>NODE_PRUNED</code> (cycle rejection), <code>NODE_TERMINAL</code>, <code>GOAL_FOUND</code>, and <code>BEST_MOVE_SELECTED</code>.</li>
+        <li><strong>Interactive Playback:</strong> Provides Play/Pause, Step Scrubber, and Speed control.</li>
+        <li><strong>Dynamic Search Tree:</strong> Visualizes nodes with status colors (Gold active, Green goal, Amber cutoff, Gray cycle pruned, Cyan MAX, Purple MIN) and active branch breadcrumbs.</li>
+      </ul>
+    </div>
+
+    <div class="box box-use">
+      <div class="box-title">🎯 Academic / Practical Use:</div>
+      <p>Eliminates the "black box" nature of AI search algorithms by providing full visual transparency into state transitions, branch pruning, and score backtracking.</p>
+    </div>
+
+    <div class="box box-speech">
+      <div class="box-title">🗣️ Exact Speech Script for AI Mam:</div>
+      <p class="speech-quote">"Ma'am, here in the AI Algorithm Visualizer, we open the 'black box' of the search algorithm. Every step corresponds to an actual algorithm event: node generation, expansion, cycle pruning, and depth cutoff. When we step through or hit Play, the tree renders dynamically, the active branch path is highlighted, and the 3×3 board updates in real time to show which tile moved into the blank space."</p>
+    </div>
+  </div>
+
+  <!-- VIVA DEFENSE CHEAT SHEET -->
+  <div class="cheat-sheet">
+    <h3>💡 Golden Viva Defense Cheat Sheet (Common Professor Questions)</h3>
+    
+    <div class="qa-item">
+      <div class="qa-q">Q1: Why do Tic-Tac-Toe cutoffs drop to exactly 0 at Depth 9?</div>
+      <div class="qa-a"><strong>Answer:</strong> Because a Tic-Tac-Toe board has only 9 cells. No match can exceed 9 plies; therefore, every branch reaches a terminal state (Win, Loss, or Draw) within 9 plies and the search is never prematurely cut off.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">Q2: Why is cycle detection necessary in 8-Puzzle but not in Tic-Tac-Toe?</div>
+      <div class="qa-a"><strong>Answer:</strong> 8-Puzzle tile sliding actions are reversible (moving left then right returns to the same state), creating cycles in the state space graph. Tic-Tac-Toe cells cannot be un-played, so empty cells strictly decrease, naturally preventing cycles.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">Q3: What makes the Manhattan Distance heuristic admissible?</div>
+      <div class="qa-a"><strong>Answer:</strong> Manhattan Distance calculates the straight-line grid distance for each tile ignoring obstacles. Since tiles must move around other tiles, the true path length $h^*(n)$ is always greater than or equal to Manhattan Distance ($h(n) \le h^*(n)$), guaranteeing optimal A* solutions.</div>
+    </div>
+
+    <div class="qa-item">
+      <div class="qa-q">Q4: Why return (100 - depth) on a win in Minimax?</div>
+      <div class="qa-a"><strong>Answer:</strong> To force the AI to choose the fastest possible win. A win at Depth 1 gives score +99, while a win at Depth 3 gives +97. The maximizing AI prefers +99, finding the quickest checkmate.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Project 43 | B.Tech Computer Science &amp; Engineering | Dual-Game AI Search Analysis Dashboard
+  </div>
+
+</body>
+</html>
