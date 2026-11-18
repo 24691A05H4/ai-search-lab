@@ -1,0 +1,8 @@
+{
+  "name": "ai-search-lab",
+  "version": "1.0.0",
+  "description": "Project 43 Dual-Game AI Search Analysis Lab",
+  "scripts": {
+    "build": "echo 'Static deployment ready'"
+  }
+}
