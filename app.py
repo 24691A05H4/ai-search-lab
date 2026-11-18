@@ -798,32 +798,34 @@ elif selected_nav == "🎮 Tic-Tac-Toe Game":
     st.markdown("## 🎮 Play Tic-Tac-Toe vs Minimax AI")
     st.caption("Human plays as 'X' (First Mover) | AI plays as 'O' (Depth-Limited Minimax)")
 
-    # Difficulty & Depth Selector for active game
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 🎚️ AI Difficulty Level")
-    difficulty_option = st.sidebar.radio(
-        "Select Game Difficulty",
+    # Main Page Prominent Difficulty Selector
+    st.markdown("##### 🎚️ Select AI Difficulty Level:")
+    difficulty_option = st.radio(
+        "Difficulty:",
         ["🟢 Easy", "🟡 Medium", "🔴 Hard (Unbeatable)", "⚙️ Custom Depth"],
         index=2,
-        help="Easy: Casual play with frequent blunders. Medium: Tactical defense. Hard: Unbeatable Minimax."
+        horizontal=True,
+        label_visibility="collapsed",
+        key="ttt_main_difficulty_radio",
+        help="Easy: Casual play with frequent blunders. Medium: Tactical defense. Hard: Unbeatable Minimax.",
     )
 
     if difficulty_option == "🟢 Easy":
         ttt_depth = 1
         diff_mode = "Easy"
-        st.sidebar.caption("🌱 **Easy:** AI explores 1 ply and makes frequent mistakes.")
+        st.info("🌱 **Easy Mode:** AI searches 1 ply ahead and makes casual blunders. You can easily win!")
     elif difficulty_option == "🟡 Medium":
         ttt_depth = 3
         diff_mode = "Medium"
-        st.sidebar.caption("⚔️ **Medium:** AI explores 3 plies with balanced strategy.")
+        st.info("⚔️ **Medium Mode:** AI searches 3 plies ahead with tactical awareness. A balanced challenge!")
     elif difficulty_option == "🔴 Hard (Unbeatable)":
         ttt_depth = 9
         diff_mode = "Hard"
-        st.sidebar.caption("👑 **Hard:** Unbeatable Depth-9 Minimax.")
+        st.info("👑 **Hard Mode:** Full Depth-9 Minimax search. Mathematically unbeatable (Win or Draw)!")
     else:
         diff_mode = "Hard"
-        ttt_depth = st.sidebar.slider(
-            "Custom Search Depth Limit",
+        ttt_depth = st.slider(
+            "Custom Search Depth Limit (1 to 9)",
             min_value=1,
             max_value=9,
             value=5,
